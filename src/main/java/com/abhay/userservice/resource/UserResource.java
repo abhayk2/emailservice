@@ -20,8 +20,8 @@ public class UserResource {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<HttpResponse> createUser(@RequestBody User user) {
-        User newUser = userService.saveUser(user);
+    public ResponseEntity<HttpResponse> createUser(@RequestBody User user, @RequestParam(value = "emailType",required = false) String emailType) {
+        User newUser = userService.saveUser(user,emailType);
     return ResponseEntity.created(URI.create("")).body(
             HttpResponse.builder()
                     .timeStamp(LocalDateTime.now().toString())
