@@ -1,0 +1,18 @@
+#Database
+POSTGRES_SQL_USERNAME: postgres
+POSTGRES_SQL_PASSWORD: letmein
+POSTGRES_SQL_HOST: localhost
+POSTGRES_SQL_PORT: 5432
+POSTGRES_SQL_DB: spcloud
+
+
+#server
+SERVER_PORT: 9000
+ACTIVE_PROFILE: dev
+
+#Email Config
+EMAIL_HOSTL: smtp.gmail.com
+EMAIL_PORT: 587
+EMAIL_ID: abhaykum222@gmail.com
+EMAIL_PASSWORD: luqo fhpn ebmv jghv
+VERIFY_EMAIL_HOST: http://localhost:${SERVER_PORT}
