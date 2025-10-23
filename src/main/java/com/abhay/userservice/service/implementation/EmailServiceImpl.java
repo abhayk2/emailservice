@@ -8,8 +8,10 @@ import jakarta.mail.BodyPart;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
+import jakarta.mail.util.ByteArrayDataSource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -20,6 +22,9 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Objects;
 
 import static com.abhay.userservice.utils.EmailUtils.getEmailMessage;
 import static com.abhay.userservice.utils.EmailUtils.getVerificationUrl;
@@ -69,10 +74,10 @@ public class EmailServiceImpl implements EmailService {
             helper.setSubject(NEW_USER_ACCOUNT_VERIFICATION);
             helper.setText(getEmailMessage(name, host, token));
             // Adding attachments
-            FileSystemResource img1 = new FileSystemResource(new File("/Users/abhay/Documents/pcc payment.png"));
-            FileSystemResource img2 = new FileSystemResource(new File("/Users/abhay/Documents/Aggreement.pdf"));
-            helper.addAttachment(img1.getFilename(), img1);
-            helper.addAttachment(img2.getFilename(), img2);
+            ClassPathResource img2 = new ClassPathResource("docs/Aggreement.pdf");
+            ClassPathResource img1 = new ClassPathResource("images/generated-image.png");
+            helper.addAttachment(Objects.requireNonNull(img1.getFilename()), img1);
+            helper.addAttachment(Objects.requireNonNull(img2.getFilename()), img2);
             emailSender.send(message);
 
         }catch(Exception e){
@@ -94,8 +99,8 @@ public class EmailServiceImpl implements EmailService {
             helper.setSubject(NEW_USER_ACCOUNT_VERIFICATION);
             helper.setText(getEmailMessage(name, host, token));
             // Adding attachments
-            FileSystemResource img1 = new FileSystemResource(new File("/Users/abhay/Documents/pcc payment.png"));
-            FileSystemResource img2 = new FileSystemResource(new File("/Users/abhay/Documents/Aggreement.pdf"));
+            ClassPathResource img2 = new ClassPathResource("docs/Aggreement.pdf");
+            ClassPathResource img1 = new ClassPathResource("images/generated-image.png");
             helper.addInline(getContentId(img1.getFilename()), img1);
             helper.addInline(getContentId(img2.getFilename()), img2);
             emailSender.send(message);
@@ -120,7 +125,7 @@ public class EmailServiceImpl implements EmailService {
             MimeMessage message = getMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, UTF_8);
             helper.setPriority(1);
-            helper.setFrom("newlogins.pulmonary507@passinbox.com");
+            helper.setFrom(fromEmail);
             helper.setTo(to);
             helper.setSubject(NEW_USER_ACCOUNT_VERIFICATION);
             helper.setText(textMessage,true);
@@ -144,7 +149,7 @@ public class EmailServiceImpl implements EmailService {
             MimeMessage message = getMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, UTF_8);
             helper.setPriority(1);
-            helper.setFrom("newlogins.pulmonary507@passinbox.com");
+            helper.setFrom(fromEmail);
             helper.setTo(to);
             helper.setSubject(NEW_USER_ACCOUNT_VERIFICATION);
             helper.setText(textMessage,true);
@@ -156,7 +161,7 @@ public class EmailServiceImpl implements EmailService {
             // Add Images to email body
             BodyPart imageBodyPart = new MimeBodyPart();
             System.out.println(System.getProperty("user.home"));
-            DataSource dataSource = new FileDataSource(System.getProperty("user.home")+ "/Documents/pcc payment.png");
+            DataSource dataSource = getDataSource();
             imageBodyPart.setDataHandler(new DataHandler(dataSource));
             imageBodyPart.setHeader("Content-ID", "image");
             multipart.addBodyPart(imageBodyPart);
@@ -168,6 +173,18 @@ public class EmailServiceImpl implements EmailService {
             System.out.println(e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    private static DataSource getDataSource() {
+        ClassPathResource imageResource = new ClassPathResource("images/generated-image.png");
+        DataSource dataSource;
+
+        try (InputStream inputStream = imageResource.getInputStream()) {
+            dataSource = new ByteArrayDataSource(inputStream, "image/png");
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load image for email", e);
+        }
+        return dataSource;
     }
 
     private MimeMessage getMimeMessage() {
