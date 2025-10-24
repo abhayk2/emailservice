@@ -14,5 +14,5 @@ ACTIVE_PROFILE: dev
 EMAIL_HOSTL: smtp.gmail.com
 EMAIL_PORT: 587
 EMAIL_ID: abhaykum222@gmail.com
-EMAIL_PASSWORD: luqo fhpn ebmv jghv
+EMAIL_PASSWORD: luqo **** ebmv jghv
 VERIFY_EMAIL_HOST: http://localhost:${SERVER_PORT}
